@@ -8,7 +8,7 @@ const http = require("http");
 const { FORBIDDEN_ERROR_CODE } = require("./exception/errorCode");
 const morgan = require("morgan");
 const RedisStore = require("connect-redis")(expressSession);
-const { handleStream } = require("./handler/gptStreamHandler");
+const { handleStream } = require("./handler/gptHandler");
 
 // 创建Redis连接配置
 const redisClient = redis.createClient(redisConfig);
@@ -78,9 +78,10 @@ class ExpressServer {
     const handler = async (req, res) => {
       console.log("req 路径", req.path);
       console.log("req 请求体", req.body);
+      console.log("req session", req.session);
       // 单独处理 gpt 流式请求
       if (req.path == "/api/gpt/get") {
-        handleStream(res, req, handlerFunction);
+        await handleStream(res, req, handlerFunction);
         return;
       }
       // IP 过滤

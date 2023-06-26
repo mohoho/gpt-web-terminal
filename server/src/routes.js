@@ -23,6 +23,22 @@ const routes = [
     path: "/gpt/get",
     handler: require("./controller/gptController").getGptOutput,
   },
+  {
+    path: "/gpt/getImage",
+    handler: require("./controller/gptController").getGptImage,
+  },
+  {
+    path: "/role/create",
+    handler: require("./controller/roleController").roleCreateApi,
+  },
+  {
+    path: "/role/listByUserId",
+    handler: require("./controller/roleController").roleListByUserIdApi,
+  },
+  {
+    path: "/role/getRoleElementsByKeyword",
+    handler: require("./controller/roleController").getRoleElementsByKeywordApi,
+  },
 ];
 
 module.exports = routes;

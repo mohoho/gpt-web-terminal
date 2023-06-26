@@ -1,5 +1,11 @@
 declare namespace GptTerminal {
-  type OutputStatusType = "info" | "success" | "warning" | "error" | "system" | "loading";
+  type OutputStatusType =
+    | "info"
+    | "success"
+    | "warning"
+    | "error"
+    | "system"
+    | "loading";
 
   // 输出父类型
   interface OutputType {
@@ -47,6 +53,30 @@ declare namespace GptTerminal {
   }
 
   /**
+   * GPT 对话记录类型
+   */
+  interface MessageElement {
+    role: string;
+    content: string;
+  }
+  
+  interface MessageType {
+    roleKeyword: string | "default";
+    messageElements: MessageElement[];
+  }
+
+  /**
+   * 用户属性
+   */
+  interface UserType {
+    id: number;
+    username: string;
+    email?: string;
+    creatTime?: date;
+    updateTime?: date;
+  }
+
+  /**
    * 终端类型（定义一组访问及操作终端的方法）
    */
   interface TerminalType {
@@ -67,7 +97,7 @@ declare namespace GptTerminal {
     // 写命令结果
     writeResult: (output: OutputType) => void;
     // 移除 outputList 最后一个元素
-    removeLastOutput: () => void; 
+    removeLastOutput: () => void;
     // 输入框聚焦
     focusInput: () => void;
     // 获取输入框是否聚焦
@@ -86,5 +116,11 @@ declare namespace GptTerminal {
     toggleAllCollapse: () => void;
     // 设置命令是否可折叠
     setCommandCollapsible: (collapsible: boolean) => void;
+    // GPT 历史对话记录
+    listGptHistory: () => MessageType[];
+    // 终止当前命令运行
+    terminateCurrentCommand: () => void;
+    // 获取登录用户
+    getLoginUser: () => UserType;
   }
 }

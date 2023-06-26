@@ -26,7 +26,7 @@
                 <span>{{ output.text }}</span>
               </div>
               <div v-for="(result, idx) in output?.resultList" :key="idx" class="terminal-row">
-                <content-output @start="handleStart" @finish="handleFinish" :output="result" />
+                <content-output @start="handleStart" @finish="handleFinish" @failed="handleFailed" :output="result" />
               </div>
             </template>
             <!-- 打印信息 -->
@@ -79,6 +79,10 @@ import useHint from "./hint";
 import UserType = User.UserType;
 import { LOCAL_USER } from "../../core/commands/user/userConstant";
 import { defineStore } from "pinia";
+import { useMessagesStore } from "../../core/commands/gpt/messagesStore";
+
+const messagesStore = useMessagesStore();
+const messages = messagesStore.$state.messages;
 
 interface GptTerminalProps {
   height?: string | number;
@@ -184,14 +188,18 @@ const doSubmitCommand = async () => {
 
 // 处理 GPT 请求开始时的操作
 const handleStart = () => {
-  console.log("gpt 请求开始")
+  console.log("开始")
   isRunning.value = true
 }
 
 // 处理 GPT 请求结束后的操作
 const handleFinish = () => {
-  console.log("gpt 请求结束")
+  console.log("结束")
   isRunning.value = false
+}
+
+const handleFailed = () => {
+  console.log("失败")
 }
 
 // 输入框内容改变时，触发输入提示
@@ -383,6 +391,48 @@ const toggleAllCollapse = () => {
 };
 
 /**
+ * GPT 历史对话记录
+ */
+const listGptHistory = () => {
+  return messages
+}
+
+/**
+ * 终止命令运行
+ */
+const terminateCurrentCommand = () => {
+  // GPT 输出过程中不允许执行终止命令
+  if (isRunning.value == true) {
+    return
+  }
+  console.log("终止！!")
+  isRunning.value = true;
+  setHint("");
+  let inputText = inputCommand.value.text;
+  const newCommand: CommandOutputType = {
+    text: inputText,
+    type: "command",
+    resultList: [],
+  };
+  outputList.value.push(newCommand);
+  inputCommand.value = { ...initCommand };
+  // 默认展开折叠面板
+  activeKeys.value.push(outputList.value.length - 1);
+  // 自动滚到底部
+  setTimeout(() => {
+    terminalRef.value.scrollTop = terminalRef.value.scrollHeight;
+  }, 50);
+  isRunning.value = false;
+}
+
+/**
+ * 判断当前用户是否已登陆
+ */
+const getLoginUser = () => {
+  return user.value
+}
+
+/**
  * 操作终端的对象
  */
 const terminal: TerminalType = {
@@ -404,6 +454,9 @@ const terminal: TerminalType = {
   listCommandHistory,
   toggleAllCollapse,
   setCommandCollapsible,
+  listGptHistory,
+  terminateCurrentCommand,
+  getLoginUser,
 };
 
 /**

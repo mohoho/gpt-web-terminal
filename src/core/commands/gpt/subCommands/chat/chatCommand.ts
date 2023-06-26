@@ -1,8 +1,7 @@
-import { CommandType } from "../../../command";
-import { getGptOutput } from "../gptApi";
+import { CommandType } from "../../../../command";
 import { defineAsyncComponent } from "vue";
 import ComponentOutputType = GptTerminal.ComponentOutputType;
-import { roleMap } from "./roles";
+import { roleMap } from "../role/roles";
 
 const chatCommand: CommandType = {
   func: "chat",
@@ -26,14 +25,14 @@ const chatCommand: CommandType = {
   async action(options, terminal) {
     const { _, role } = options;
     if (_.length < 1) {
-      terminal.writeTextErrorResult("内容为空");
+      terminal.writeTextErrorResult("内容不可为空");
       return;
     }
     // TODO:用户自定义角色后，需要包含进来
-    if (!roleMap.has(role)) {
-      terminal.writeTextErrorResult("角色不存在");
-      return;
-    }
+    // if (!roleMap.has(role)) {
+    //   terminal.writeTextErrorResult("角色不存在");
+    //   return;
+    // }
     const message = _.join(" ");
     // const res: any = await getGptOutput(message, role);
 
